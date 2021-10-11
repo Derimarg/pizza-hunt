@@ -12,7 +12,7 @@ const PizzaSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: (createdAtVal) => dateFormat(createdAtVal)
+      get: (createdAtVal) => dateFormat(createdAtVal),
     },
     size: {
       type: String,
@@ -29,14 +29,18 @@ const PizzaSchema = new Schema(
   {
     toJSON: {
       virtuals: true,
-      getters: true
+      getters: true,
     },
     id: false,
   }
 );
+
 // get total count of comments and replies on retrieval
 PizzaSchema.virtual("commentCount").get(function () {
-  return this.comments.length;
+  return this.comments.reduce(
+    (total, comment) => total + comment.replies.length + 1,
+    0
+  );
 });
 
 const Pizza = model("Pizza", PizzaSchema);
